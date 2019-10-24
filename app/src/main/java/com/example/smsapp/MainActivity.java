@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements OnSmsReceivedList
         }
 
         else {
-            Toast.makeText(this, "Svejate fora, manca il numero o il messaggio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Manca il numero o il messaggio", Toast.LENGTH_SHORT).show();
         }
     }
 
