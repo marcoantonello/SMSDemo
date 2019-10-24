@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnSmsReceivedList
                     MyMessage();
                 }
                 else{
-                    Toast.makeText(this, "Non hai i permessi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Non hai i permessi", Toast.LENGTH_LONG).show();
                 }
 
         }
