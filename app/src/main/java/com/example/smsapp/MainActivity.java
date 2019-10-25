@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements OnSmsReceivedList
         setContentView(R.layout.activity_main);
 
         requestPermissions(new String[]{Manifest.permission.RECEIVE_SMS}, 1);
-        RicezioneSMS.listener = this;
+        SMSReceiver.listener = this;
         txt_message = (EditText) findViewById(R.id.txt_message);
         txt_phone_number = (EditText) findViewById(R.id.txt_phone_number);
 
@@ -45,25 +45,22 @@ public class MainActivity extends AppCompatActivity implements OnSmsReceivedList
         String Message = txt_message.getText().toString().trim();
 
         if (phoneNumber.equals("") || Message.equals("")) {
-            Toast.makeText(this, "Manca il numero o il messaggio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Either Phone number or message body is missing", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (phoneNumber.length()>16) {
-            Toast.makeText(this, "Numero di telefono troppo lungo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Phone number has more than 16 digits", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (Message.length()>160) {
-            Toast.makeText(this, "Il messaggio supera i 160 caratteri", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Message too long", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(phoneNumber, null, Message, null, null);
-
-        Toast.makeText(this, "Messagio inviato", Toast.LENGTH_SHORT).show();
-
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, Message, null, null);
+            Toast.makeText(this, "Message sent", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -74,15 +71,26 @@ public class MainActivity extends AppCompatActivity implements OnSmsReceivedList
                 if (grantResults.length >= 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     MyMessage();
                 } else {
-                    Toast.makeText(this, "Non hai i permessi", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "You don't have permissions", Toast.LENGTH_LONG).show();
                 }
 
         }
     }
 
+    /**
+     *
+     * @param nTelefono
+     * @param text
+     * @return Toast containing phone number and message if key is "0a". It won't be shown the key
+     * If the message doesn't contain any key the app won't be awakened
+     *
+     */
     @Override
-    public void onSmsReceived(String nTelefono, String testo) {
+    public void onSmsReceived(String nTelefono, String text) {
         Log.d("Main Activity", "Qui");
-        Toast.makeText(getApplicationContext(), nTelefono + " ti ha mandato: " + testo, Toast.LENGTH_LONG).show();
+        KeysArray awakeningKey = new KeysArray();
+        if (awakeningKey.hasKey(0, text)) {
+            Toast.makeText(getApplicationContext(), nTelefono + " ti ha mandato: " + text.substring(2), Toast.LENGTH_LONG).show();
+        }
     }
 }

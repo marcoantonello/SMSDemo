@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-public class RicezioneSMS extends BroadcastReceiver {
+public class SMSReceiver extends BroadcastReceiver {
     public static OnSmsReceivedListener listener;
 
     @Override
     public void onReceive(Context context, Intent intent){
-        Log.d("RicezioneSMS","Cosa?");
         Bundle extras = intent.getExtras();
         if (extras!= null){
             String format= extras.getString("format");
@@ -21,7 +20,7 @@ public class RicezioneSMS extends BroadcastReceiver {
                 SmsMessage sms = SmsMessage.createFromPdu((byte[])pdus[i]);
                 String testo = sms.getMessageBody();
                 String numero = sms.getOriginatingAddress();
-                Log.d("RicezioneSMS","E' arrivato un messaggio " + testo + " da " + numero);
+                Log.d("SMSReceiver","E' arrivato un messaggio " + testo + " da " + numero);
                 //Toast.makeText(context, testo, Toast.LENGTH_LONG).show();
                 listener.onSmsReceived(numero, testo);
             }
