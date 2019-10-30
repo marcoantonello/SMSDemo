@@ -118,7 +118,7 @@ public class FirstLevelSmsHandler implements SmsListener{
     public PDU getPDU(int key)
     {
         FileInputStream fileInputStream=null;
-        PDU sms=null;
+        PDU pdu=null;
         try{fileInputStream = appContext.openFileInput("data.dat");}
         catch(FileNotFoundException e){ Toast.makeText(appContext,"file not found",Toast.LENGTH_SHORT); }
 
@@ -131,7 +131,7 @@ public class FirstLevelSmsHandler implements SmsListener{
             if(is!=null)
             {
                 try {
-                    sms = (PDU) is.readObject();
+                    pdu = (PDU) is.readObject();
                 } catch (IOException e) {
                 } catch (ClassNotFoundException e) {
                 }
@@ -145,7 +145,7 @@ public class FirstLevelSmsHandler implements SmsListener{
             try{ fileInputStream.close();}
             catch(IOException e){  }
         }
-        return sms;
+        return pdu;
     }
 
     public void passPDU(PDU pdu)
@@ -161,6 +161,7 @@ public class FirstLevelSmsHandler implements SmsListener{
     @Override
     public void handleSmS(SmsMessage sms) {
         FileOutputStream fos=null;
+        PDU pdu=new PDU(sms);
 
         try{ fos= appContext.openFileOutput("data.dat", Context.MODE_PRIVATE);}
         catch(IOException e){  }
@@ -172,7 +173,7 @@ public class FirstLevelSmsHandler implements SmsListener{
 
             if(os!=null) {
                 try {
-                    os.writeObject(this);
+                    os.writeObject(pdu);
                 } catch (IOException e) {
                 }
 
