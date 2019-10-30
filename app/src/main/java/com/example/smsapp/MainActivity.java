@@ -12,9 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.smsconnectivity.FirstLevelSmsHandler;
-import com.example.smsconnectivity.PDU;
-
 public class MainActivity extends AppCompatActivity {
 
    EditText txt_message;
@@ -83,13 +80,23 @@ public class MainActivity extends AppCompatActivity {
 
         if((!phoneNumber.equals("") && !message.equals(""))) {
 
+            if (phoneNumber.length()>16) {
+                Toast.makeText(this, "Phone number has more than 16 digits", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (message.length()>160) {
+                Toast.makeText(this, "Message too long", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             flHandler.passPDU(new PDU(phoneNumber,message));
 
-            Toast.makeText(this, "Messagio inviato", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Message sent", Toast.LENGTH_SHORT).show();
         }
 
         else {
-            Toast.makeText(this, "Svejate fora, manca il numero o il messaggio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Either phone number or message body is missing", Toast.LENGTH_SHORT).show();
         }
    }
 
