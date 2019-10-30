@@ -11,7 +11,7 @@ public class PDU implements Serializable {
 
     public PDU(SmsMessage sms)
     {
-        userData=new String(sms.getUserData());
+        userData=new String(sms.getMessageBody());
         originatingAddress=sms.getOriginatingAddress();
     }
     public PDU(String destinationAddress, String userData)
