@@ -1,32 +1,32 @@
 package com.example.smsconnectivity;
 
-import android.app.PendingIntent;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import androidx.cursoradapter.widget.CursorAdapter;
+
 import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class FirstLevelSmsHandler implements SmsListener{
 
     SmsManager smsMan;
     static final int USER_DATA_LENGHT=160;
     Context appContext;
+    private DBManager db=null;
+
 
 
     public FirstLevelSmsHandler(Context context)
     {
         appContext=context;
         smsMan=SmsManager.getDefault();
+
+        db=new DBManager(context);
     }
 
     /*maybe i need those
@@ -107,37 +107,27 @@ public class FirstLevelSmsHandler implements SmsListener{
 
 ////////////////NEW
 
-    public PDU getPDU()//int key)
+    public ArrayList<PDU> getPDUS()//int key)
     {
-        FileInputStream fileInputStream=null;
-        PDU pdu=null;
-        try{fileInputStream = appContext.openFileInput("data.dat");}
-        catch(FileNotFoundException e){ Toast.makeText(appContext,"file not found",Toast.LENGTH_SHORT); }
+        ArrayList<PDU> pdus=new ArrayList<>();
+        Cursor cursor=db.query();
 
-        if(fileInputStream!=null)
+        while(cursor.moveToNext())
         {
-            ObjectInputStream is=null;
-            try{ is = new ObjectInputStream(fileInputStream);}
-            catch(IOException e){  }
+            int index;
 
-            if(is!=null)
-            {
-                try {
-                    pdu = (PDU) is.readObject();
-                } catch (IOException e) {
-                } catch (ClassNotFoundException e) {
-                }
+            index = cursor.getColumnIndexOrThrow(DBHelper.FIELD_NUMBER);
+            String PhoneNumber = cursor.getString(index);
 
-                try {
-                    is.close();
-                } catch (IOException e) {
-                }
-            }
+            index = cursor.getColumnIndexOrThrow(DBHelper.FIELD_TEXT);
+            String text = cursor.getString(index);
 
-            try{ fileInputStream.close();}
-            catch(IOException e){  }
+            pdus.add(new PDU(null,PhoneNumber,text));
         }
-        return pdu;
+        db.deleteAll();//delete all messages
+        if(pdus.isEmpty())
+            return null;
+        return pdus;
     }
 
     public void passPDU(PDU pdu)
@@ -152,31 +142,6 @@ public class FirstLevelSmsHandler implements SmsListener{
 
     @Override
     public void handleSmS(SmsMessage sms) {
-        FileOutputStream fos=null;
-        PDU pdu=new PDU(sms);
-
-        try{ fos= appContext.openFileOutput("data.dat", Context.MODE_PRIVATE);}//open file
-        catch(IOException e){  }
-
-        if(fos!=null) {
-            ObjectOutputStream os=null;
-            try{ os = new ObjectOutputStream(fos);}//create stream
-            catch(IOException e){  }
-
-            if(os!=null) {
-                try {
-                    os.writeObject(pdu);//deserialize object
-                } catch (IOException e) {
-                }
-
-                try {
-                    os.close();
-                } catch (IOException e) {
-                }
-            }
-
-            try{fos.close();}
-            catch(IOException e){  }
-        }
+        db.save(sms.getDisplayOriginatingAddress(),sms.getMessageBody());//insert sms in database
     }
 }

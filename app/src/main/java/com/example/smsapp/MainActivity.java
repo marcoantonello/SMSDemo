@@ -15,12 +15,15 @@ import androidx.core.content.ContextCompat;
 import com.example.smsconnectivity.FirstLevelSmsHandler;
 import com.example.smsconnectivity.PDU;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
    EditText txt_message;
    EditText txt_phone_number;
    FirstLevelSmsHandler flHandler;
    boolean canSend,canReceive,canRead;
+    ArrayList<PDU> pdu;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
        canReceive=false;
        canSend=false;
 
+       ArrayList<PDU> pdu=null;
 
 
        txt_message = (EditText) findViewById(R.id.txt_message);
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btn_receive(View view) {
-        PDU pdu=null;
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_GRANTED)
         {
             canReceive=true;
@@ -68,11 +72,13 @@ public class MainActivity extends AppCompatActivity {
 
         if(canReceive&&canRead)
         {
-            pdu=flHandler.getPDU();
-            if(pdu!=null)
+            if(pdu==null || pdu.isEmpty())
+                pdu=flHandler.getPDUS();
+            if(pdu!=null && !pdu.isEmpty())
             {
+                PDU active=pdu.remove(0);
                 EditText txtRecived=findViewById(R.id.txt_message2);
-                txtRecived.setText("num "+pdu.getOriginatingAddress()+"\n testo "+pdu.getUserData());
+                txtRecived.setText("num "+active.getOriginatingAddress()+"\n testo "+active.getUserData());
             }
         }
     }
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         if((!phoneNumber.equals("") && !message.equals(""))) {
 
-            flHandler.passPDU(new PDU(phoneNumber,message));
+            flHandler.passPDU(new PDU(phoneNumber, null,message));
 
             Toast.makeText(this, "Messagio inviato", Toast.LENGTH_SHORT).show();
         }

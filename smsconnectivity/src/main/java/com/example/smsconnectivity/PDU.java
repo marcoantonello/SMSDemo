@@ -14,10 +14,11 @@ public class PDU implements Serializable {
         userData=new String(sms.getMessageBody());
         originatingAddress=sms.getOriginatingAddress();
     }
-    public PDU(String destinationAddress, String userData)
+    public PDU(String destinationAddress,String originatingAddress, String userData)
     {
         this.userData=userData;
         this.destinationAddress=destinationAddress;
+        this.originatingAddress=originatingAddress;
     }
 
     public String getOriginatingAddress() {
