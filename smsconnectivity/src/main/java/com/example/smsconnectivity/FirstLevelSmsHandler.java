@@ -2,22 +2,17 @@ package com.example.smsconnectivity;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-
-import androidx.cursoradapter.widget.CursorAdapter;
-
 import java.util.ArrayList;
 
-import static android.content.Context.MODE_PRIVATE;
 
 public class FirstLevelSmsHandler implements SmsListener{
 
     SmsManager smsMan;
     static final int USER_DATA_LENGHT=160;
     Context appContext;
-    private DBManager db=null;
+    private DBManager db;
 
 
 
@@ -106,21 +101,26 @@ public class FirstLevelSmsHandler implements SmsListener{
 */
 
 ////////////////NEW
-
+    /*
+    *@return all the unretrieved messages null if there aren't
+    *@modify delete all the messages
+     */
     public ArrayList<PDU> getPDUS()//int key)
     {
         ArrayList<PDU> pdus=new ArrayList<>();
         Cursor cursor=db.query();
 
-        while(cursor.moveToNext())
+        while(cursor.moveToNext())//cursor seek the frst element on the first call//return true if move action succeeded
         {
-            int index;
+            //column index in the tuple
+            int colIndex;
+            //retrieve column index from the field name
+            colIndex = cursor.getColumnIndexOrThrow(DBHelper.FIELD_NUMBER);
+            //retrieve the value
+            String PhoneNumber = cursor.getString(colIndex);
 
-            index = cursor.getColumnIndexOrThrow(DBHelper.FIELD_NUMBER);
-            String PhoneNumber = cursor.getString(index);
-
-            index = cursor.getColumnIndexOrThrow(DBHelper.FIELD_TEXT);
-            String text = cursor.getString(index);
+            colIndex = cursor.getColumnIndexOrThrow(DBHelper.FIELD_TEXT);
+            String text = cursor.getString(colIndex);
 
             pdus.add(new PDU(null,PhoneNumber,text));
         }
@@ -129,17 +129,31 @@ public class FirstLevelSmsHandler implements SmsListener{
             return null;
         return pdus;
     }
-
-    public void passPDU(PDU pdu)
+    /*
+    *@param message to send not null
+    * @return send the sms,false if there was some problems
+     */
+    public boolean passPDU(PDU pdu)
     {
+        //control if address is numeric only and not null or empty
+        //control if text is not null
+        if(pdu==null||pdu.getDestinationAddress()==null||pdu.getDestinationAddress()==""||pdu.getDestinationAddress().matches("[0-9]+")||pdu.getUserData()==null)
+            return false;
         sendSms(pdu.getDestinationAddress(),null, pdu.getUserData());
+        return true;
     }
-
+    /*
+     *wrapper of API same specifications
+     */
     private void sendSms(String destinationAddress,String scAddress,String text)
     {
         smsMan.sendTextMessage(destinationAddress,scAddress,text,null,null);
     }
 
+    /*
+    *@param sms not null
+    * @modify save the sms in db
+     */
     @Override
     public void handleSmS(SmsMessage sms) {
         db.save(sms.getDisplayOriginatingAddress(),sms.getMessageBody());//insert sms in database

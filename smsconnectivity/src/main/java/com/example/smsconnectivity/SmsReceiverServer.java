@@ -9,7 +9,7 @@ import android.telephony.SmsMessage;
 import androidx.annotation.Nullable;
 
 public class SmsReceiverServer extends Service {
-
+///////////////////////////////////UNUSED
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

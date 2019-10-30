@@ -11,6 +11,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class SmsReceiver extends BroadcastReceiver {
+    /*
+    *@param context and intent passed by os
+    *@modify pass the message to the firstLevelSmsHandler after ensuring that is not null
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         if(context.checkSelfPermission(Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED)

@@ -15,15 +15,25 @@ public class DBHelper extends SQLiteOpenHelper
     public DBHelper(Context context) {
         super(context, DBNAME, null, 1);
     }
+    /*
+    *called the first time the db is used
+    * @param the db to initialize not null
+    * @returns full initilized db with all tables created
+     */
     @Override
     public void onCreate(SQLiteDatabase db)
     {
+        //build of the creation table query
         String q="CREATE TABLE "+TABLE_NAME+
                 " ( _id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 FIELD_NUMBER+" TEXT," +
                 FIELD_TEXT+" TEXT)";
+        //query execution
         db.execSQL(q);
     }
+    /*
+    *
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     { }
