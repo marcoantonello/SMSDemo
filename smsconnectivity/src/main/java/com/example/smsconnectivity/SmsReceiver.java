@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import android.widget.Toast;
 
 public class SmsReceiver extends BroadcastReceiver {
@@ -18,9 +17,9 @@ public class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(context.checkSelfPermission(Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED)
-            Toast.makeText(context,"no riceve",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"no permission for receive",Toast.LENGTH_SHORT).show();
         if(context.checkSelfPermission(Manifest.permission.READ_SMS)== PackageManager.PERMISSION_DENIED)
-            Toast.makeText(context,"no legge",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"no permission for read",Toast.LENGTH_SHORT).show();
         Bundle bundle = intent.getExtras();
         String format=bundle.getString("format");
         Object[] pdus=(Object[])bundle.get("pdus");
@@ -30,10 +29,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 SmsListener listener = new FirstLevelSmsHandler(context);
                 if (listener != null) {
                     listener.handleSmS(sms);
-                    Toast.makeText(context,"arriavto sms",Toast.LENGTH_SHORT).show();
                 }
-                else
-                    Toast.makeText(context,"NULL",Toast.LENGTH_SHORT).show();
 
             }
         }
