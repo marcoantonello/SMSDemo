@@ -20,6 +20,10 @@ public class PDU implements Serializable {
         this.destinationAddress=destinationAddress;
     }
 
+    public String getOriginatingAddress() {
+        return originatingAddress;
+    }
+
     public String getDestinationAddress() {
         return destinationAddress;
     }

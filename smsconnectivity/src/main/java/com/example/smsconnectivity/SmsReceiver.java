@@ -11,11 +11,15 @@ public class SmsReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Bundle bundle = intent.getExtras();
-        SmsMessage sms=(SmsMessage)bundle.get("message");
-        if(sms!=null) {
-            SmsListener listener = FirstLevelSmsHandler.getDefaultLitener();
-            if(listener!=null)
-                listener.handleSmS(sms);
+        String format=bundle.getString("format");
+        Object[] pdus=(Object[])bundle.get("pdus");
+        if(pdus!=null) {
+            SmsMessage sms = SmsMessage.createFromPdu((byte[]) pdus[0],format);
+            if (sms != null) {
+                SmsListener listener = FirstLevelSmsHandler.getDefaultLitener();
+                if (listener != null)
+                    listener.handleSmS(sms);
+            }
         }
     }
 }

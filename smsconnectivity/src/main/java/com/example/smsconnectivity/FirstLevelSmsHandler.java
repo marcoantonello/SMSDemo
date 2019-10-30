@@ -115,7 +115,7 @@ public class FirstLevelSmsHandler implements SmsListener{
 
 ////////////////NEW
 
-    public PDU getPDU(int key)
+    public PDU getPDU()//int key)
     {
         FileInputStream fileInputStream=null;
         PDU pdu=null;
