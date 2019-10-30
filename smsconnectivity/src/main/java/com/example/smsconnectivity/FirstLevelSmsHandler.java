@@ -20,7 +20,6 @@ public class FirstLevelSmsHandler implements SmsListener{
 
     SmsManager smsMan;
     static final int USER_DATA_LENGHT=160;
-    private static SmsListener defaultListener=null;
     Context appContext;
 
 
@@ -28,13 +27,6 @@ public class FirstLevelSmsHandler implements SmsListener{
     {
         appContext=context;
         smsMan=SmsManager.getDefault();
-        if(defaultListener==null)//non so se funzia
-            defaultListener=this;
-    }
-
-    public static SmsListener getDefaultLitener()
-    {
-        return  defaultListener;
     }
 
     /*maybe i need those
@@ -163,17 +155,17 @@ public class FirstLevelSmsHandler implements SmsListener{
         FileOutputStream fos=null;
         PDU pdu=new PDU(sms);
 
-        try{ fos= appContext.openFileOutput("data.dat", Context.MODE_PRIVATE);}
+        try{ fos= appContext.openFileOutput("data.dat", Context.MODE_PRIVATE);}//open file
         catch(IOException e){  }
 
         if(fos!=null) {
             ObjectOutputStream os=null;
-            try{ os = new ObjectOutputStream(fos);}
+            try{ os = new ObjectOutputStream(fos);}//create stream
             catch(IOException e){  }
 
             if(os!=null) {
                 try {
-                    os.writeObject(pdu);
+                    os.writeObject(pdu);//deserialize object
                 } catch (IOException e) {
                 }
 
